@@ -44,15 +44,33 @@ tidydat <- tidydat[which(!is.na(tidydat$mass)),]
 #Remove points at extreme lats for better plotting 
 tidydat <- tidydat[which(tidydat$lat> -60 & tidydat$lat<84),]
 
+#Remove points at "Null Island'
+tidydat <- tidydat[which(!(tidydat$lat == 0 & tidydat$lng == 0)),]
+
+#Remove points missing a year
+tidydat <- tidydat[which(!is.na(tidydat$year)),]
+
 #Add HTML formatting for popup
 tidydat <- mutate(tidydat, html_info = 
                     paste0("Name: <strong>", name, "</strong> ",
                     ifelse(nametype == "Relict", "(relict)", ""), "<br>",
                            "Year ", as.character(fall), ": ", year, "<br>",
                            "Mass: ", mass, " grams"))
+
+earliest <- tidydat[which.min(tidydat$year),]
+mostRecent <- tidydat[which.max(tidydat$year),]
+
+addPhrase <- function(entry) {
+  ifelse(entry$fall == "Fell",
+         "was reported to have fell",
+         "was found")
+}
+earliest$phrase <- addPhrase(earliest)
+mostRecent$phrase <- addPhrase(mostRecent) 
 ```
 
-We removed any sites that were near the north or south poles for aesthetics when plotting the locations around the world. We then plotted all the sites where meteorites fell or were found. Interact with the map and zoom in to see the clusters redistribute until they're a single marker. Clicking on these markers will give more information about the specific meteorite.
+We removed any sites that were near the north or south poles for aesthetics when plotting the locations around the world. We then plotted all the sites where meteorites fell or were found. The most recent entry is `r mostRecent$name`, a meteorite that `r mostRecent$phrase` in `r mostRecent$year`, the oldest entry is `r earliest$name` a meteorite that `r earliest$phrase` in `r earliest$year`.  
+Interact with the map and zoom in to see the clusters redistribute until they're a single marker. Clicking on these markers will give more information about the specific meteorite.  
 
 ```{r}
 #Generate Map
