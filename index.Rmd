@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 Data on meteorite landings was retrieved from [NASA's website.](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh) 
 
 ```{r}
+# Output is also at https://phiprime.github.io/MeteoriteLandings/index.html
+
 fileLoc <- "./Data/Meteorite.csv"
 if (!file.exists(fileLoc)) {
 download.file("https://data.nasa.gov/api/views/gh4g-9sfh/rows.csv?accessType=DOWNLOAD",
