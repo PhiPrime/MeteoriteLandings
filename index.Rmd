@@ -1,0 +1,79 @@
+---
+title: "Meteorite Landings"
+author: "Luke Coughlin"
+date: "8/12/2020"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+```
+
+Data on meteorite landings was retrieved from [NASA's website.](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh) 
+
+```{r}
+fileLoc <- "./Data/Meteorite.csv"
+if (!file.exists(fileLoc)) {
+download.file("https://data.nasa.gov/api/views/gh4g-9sfh/rows.csv?accessType=DOWNLOAD",
+              fileLoc, method = "curl")
+}
+dat <- read.csv(fileLoc)
+```
+
+```{r message = FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+
+```{r}
+tidydat <- dat %>% mutate(fall = as.factor(fall),
+                          year = year(mdy_hms(year)),
+                          lat = reclat,
+                          lng = reclong,
+                          mass = mass..g.) %>%
+  select(id, name, nametype, mass, fall, year, lat, lng)
+
+tidydat <- tidydat[which(!is.na(tidydat$lat)),]
+tidydat <- tidydat[which(!is.na(tidydat$mass)),]
+
+#Remove points at extreme lats for better plotting 
+tidydat <- tidydat[which(tidydat$lat> -60 & tidydat$lat<84),]
+
+#Add HTML formatting for popup
+tidydat <- mutate(tidydat, html_info = 
+                    paste0("Name: <strong>", name, "</strong> ",
+                    ifelse(nametype == "Relict", "(relict)", ""), "<br>",
+                           "Year ", as.character(fall), ": ", year, "<br>",
+                           "Mass: ", mass, " grams"))
+```
+
+We removed any sites that were near the north or south poles for aesthetics when plotting the locations around the world. We then plotted all the sites where meteorites fell or were found in clusters. Interact with the map and zoom in to see the clusters redistribute until they're a single marker. Clicking on these markers will give more information about the specific meteorite.
+
+```{r}
+#Generate Map
+library(leaflet)
+as.data.frame(tidydat) %>% leaflet() %>% addTiles() %>% 
+  addMarkers(clusterOptions = markerClusterOptions(),
+             popup = tidydat$html_info)
+```
+  
+Additional information on identifying meteorites [can be found here.](https://www.lpi.usra.edu/meteor/docs/nc-guidelines.htm)  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
