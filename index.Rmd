@@ -52,7 +52,7 @@ tidydat <- mutate(tidydat, html_info =
                            "Mass: ", mass, " grams"))
 ```
 
-We removed any sites that were near the north or south poles for aesthetics when plotting the locations around the world. We then plotted all the sites where meteorites fell or were found in clusters. Interact with the map and zoom in to see the clusters redistribute until they're a single marker. Clicking on these markers will give more information about the specific meteorite.
+We removed any sites that were near the north or south poles for aesthetics when plotting the locations around the world. We then plotted all the sites where meteorites fell or were found. Interact with the map and zoom in to see the clusters redistribute until they're a single marker. Clicking on these markers will give more information about the specific meteorite.
 
 ```{r}
 #Generate Map
